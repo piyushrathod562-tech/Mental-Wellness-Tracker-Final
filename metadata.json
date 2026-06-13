@@ -1,0 +1,6 @@
+{
+  "name": "Mental Wellness Tracker",
+  "description": "An empathetic mental wellness tracker with secure server-side Gemini API analysis, safety guardrails, and crisis trigger protocols tailored for competitive exam students (JEE, NEET, UPSC).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
