@@ -3,6 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import dotenv from "dotenv";
+import { sanitizeInput, anonymizePersonalInfo, detectCrisis } from "./src/utils/security";
 
 dotenv.config();
 
@@ -34,61 +35,6 @@ const ai = new GoogleGenAI({
     }
   }
 });
-
-/**
- * 1. INPUT SANITIZATION & OWASP GUARDRAILS
- * Sanitizes input against basic XSS vectors and SQL injections.
- */
-function sanitizeInput(text: string): string {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
-    .replace(/\//g, "&#x2F;");
-}
-
-/**
- * 2. PERSONAL DATA ANONYMIZATION VECTOR
- * Anonymizes phone numbers, emails, and typical Roll numbers or ID numbers prior to LLM submission.
- */
-function anonymizePersonalInfo(text: string): string {
-  let processed = text;
-  // Anonymize Email
-  processed = processed.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "[ANON_EMAIL]");
-  // Anonymize Indian mobile numbers starting with/without +91
-  processed = processed.replace(/(?:\+91[\-\s]?)?[789]\d{9}/g, "[ANON_PHONE]");
-  // Anonymize general roll numbers / registrations (typically 8-12 alphanumeric characters)
-  processed = processed.replace(/\b[A-Z0-9]{8,12}\b/g, "[ANON_IDENTIFIER]");
-  return processed;
-}
-
-/**
- * 3. CRISIS TRIGGER PROTOCOL
- * Hardcoded deterministic regex/keyword scanning to bypass LLM instantly
- */
-const CRISIS_KEYWORDS = [
-  /suicide/i,
-  /want to die/i,
-  /kill myself/i,
-  /ending my life/i,
-  /self harm/i,
-  /better off dead/i,
-  /end my misery/i,
-  /hanging myself/i,
-  /taking my life/i,
-  /give up on life/i,
-  /coaching suicide/i,
-  /atmasamarpan/i, // Hinglish/Hindi elements
-  /jaan de dunga/i,
-  /marna chahta/i
-];
-
-function detectCrisis(text: string): boolean {
-  return CRISIS_KEYWORDS.some((regex) => regex.test(text));
-}
 
 // REST endpoints API
 // 1. Get all session entries
