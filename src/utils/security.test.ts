@@ -99,4 +99,10 @@ describe("Crisis Detection & Local short-circuit protocols", () => {
       expect(detectCrisis(entry)).toBe(true);
     }
   });
+
+  it("should detect crisis trigger regardless of case sensitivity or sentence position", () => {
+    expect(detectCrisis("Marna Chahta hoon main ab to")).toBe(true);
+    expect(detectCrisis("Sometimes I think of Ending MY lifE entirely.")).toBe(true);
+    expect(detectCrisis("I will choose ATmaSaMarPan option.")).toBe(true);
+  });
 });

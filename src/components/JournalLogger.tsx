@@ -19,6 +19,16 @@ import {
 } from 'lucide-react';
 import { JournalEntry, SecurityMetric } from '../types';
 
+const MOOD_DETAILS_MAP: Record<number, { emoji: string; label: string; color: string }> = {
+  1: { emoji: "😢", label: "Very Stressed / Lagging", color: "text-rose-400 bg-rose-400/10 border-rose-400/20" },
+  2: { emoji: "😟", label: "Anxious / Overwhelmed", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" },
+  3: { emoji: "😐", label: "Average / Coping", color: "text-slate-400 bg-slate-400/10 border-slate-400/20" },
+  4: { emoji: "🙂", label: "Focused / Stable", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
+  5: { emoji: "🌟", label: "Feeling Confident", color: "text-blue-400 bg-blue-400/10 border-blue-400/20" },
+};
+
+const DEFAULT_MOOD = { emoji: "😐", label: "Neutral", color: "text-slate-400" };
+
 export default function JournalLogger() {
   const [inputText, setInputText] = useState('');
   const [examType, setExamType] = useState<'JEE' | 'NEET' | 'UPSC' | 'GATE' | 'CA' | 'OTHER'>('JEE');
@@ -61,14 +71,7 @@ export default function JournalLogger() {
   };
 
   const getMoodEmoji = (rating: number) => {
-    switch(rating) {
-      case 1: return { emoji: "😢", label: "Very Stressed / Lagging", color: "text-rose-400 bg-rose-400/10 border-rose-400/20" };
-      case 2: return { emoji: "😟", label: "Anxious / Overwhelmed", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" };
-      case 3: return { emoji: "😐", label: "Average / Coping", color: "text-slate-400 bg-slate-400/10 border-slate-400/20" };
-      case 4: return { emoji: "🙂", label: "Focused / Stable", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" };
-      case 5: return { emoji: "🌟", label: "Feeling Confident", color: "text-blue-400 bg-blue-400/10 border-blue-400/20" };
-      default: return { emoji: "😐", label: "Neutral", color: "text-slate-400" };
-    }
+    return MOOD_DETAILS_MAP[rating] || DEFAULT_MOOD;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,8 +158,8 @@ export default function JournalLogger() {
               <Brain className="w-6 h-6 text-emerald-400 animate-pulse" />
               <h3 className="text-xl font-semibold font-display tracking-tight text-slate-100">Log Your Mindspace</h3>
             </div>
-            <span className="text-xs font-mono px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 
+            <span className="text-xs font-mono px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-200 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> 
               Secure Ingress Link
             </span>
           </div>
@@ -164,7 +167,7 @@ export default function JournalLogger() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Exam context selection */}
             <div className="space-y-2">
-              <label id="exam-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+              <label id="exam-label" className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
                 Target Exam Context
               </label>
               <div aria-labelledby="exam-label" className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -173,10 +176,11 @@ export default function JournalLogger() {
                     key={type}
                     type="button"
                     onClick={() => setExamType(type)}
+                    aria-pressed={examType === type}
                     className={`py-1.5 px-2 text-xs font-mono rounded-lg border transition-all duration-150 ${
                       examType === type
-                        ? 'bg-emerald-500/10 border-emerald-400 text-emerald-400 font-bold'
-                        : 'bg-slate-900/50 border-slate-700 text-slate-400 hover:border-slate-600'
+                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold shadow-sm'
+                        : 'bg-slate-900/50 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100'
                     }`}
                   >
                     {type}
@@ -187,7 +191,7 @@ export default function JournalLogger() {
 
             {/* Companion Language selection */}
             <div className="space-y-2">
-              <label id="language-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+              <label id="language-label" className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
                 Companion Advice Language
               </label>
               <div aria-labelledby="language-label" className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -203,10 +207,11 @@ export default function JournalLogger() {
                     key={lang.code}
                     type="button"
                     onClick={() => setSelectedLanguage(lang.code as any)}
+                    aria-pressed={selectedLanguage === lang.code}
                     className={`py-1.5 px-1 text-[11px] font-sans rounded-lg border transition-all duration-150 ${
                       selectedLanguage === lang.code
-                        ? 'bg-emerald-500/10 border-emerald-400 text-emerald-400 font-bold'
-                        : 'bg-slate-900/50 border-slate-700 text-slate-400 hover:border-slate-600'
+                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold shadow-sm'
+                        : 'bg-slate-900/50 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100'
                     }`}
                   >
                     {lang.label}
@@ -217,7 +222,7 @@ export default function JournalLogger() {
 
             {/* Mood selector */}
             <div className="space-y-2">
-              <label id="mood-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+              <label id="mood-label" className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
                 Current Stress & Mood Level
               </label>
               <div aria-labelledby="mood-label" className="grid grid-cols-5 gap-2">
@@ -230,20 +235,22 @@ export default function JournalLogger() {
                       type="button"
                       onClick={() => handleMoodSelect(rating)}
                       title={m.label}
+                      aria-pressed={isSelected}
+                      aria-label={`Mood rating ${rating}: ${m.label}`}
                       className={`py-3 px-1 flex flex-col items-center justify-center rounded-xl border transition-all duration-200 ${
                         isSelected 
-                          ? 'bg-slate-900 ring-2 ring-emerald-400 border-transparent shadow shadow-emerald-400/20 scale-105' 
-                          : 'bg-slate-900/40 border-slate-700 hover:border-slate-600 hover:scale-102'
+                          ? 'bg-slate-900 ring-2 ring-emerald-400 border-transparent shadow shadow-emerald-400/25 scale-105' 
+                          : 'bg-slate-900/50 border-slate-700 hover:border-slate-500 hover:scale-102'
                       }`}
                     >
-                      <span className="text-2xl mb-1 filter drop-shadow-sm">{m.emoji}</span>
-                      <span className="text-[9px] font-mono font-medium text-slate-400">{rating}</span>
+                      <span className="text-2xl mb-1 filter drop-shadow-sm" aria-hidden="true">{m.emoji}</span>
+                      <span className="text-[10px] font-mono font-medium text-slate-300">{rating}</span>
                     </button>
                   );
                 })}
               </div>
               <div className="text-center">
-                <span className="text-xs font-mono text-emerald-400/90 font-medium">
+                <span className="text-xs font-mono text-emerald-300 font-medium">
                   Selected: {getMoodEmoji(moodRating).label}
                 </span>
               </div>
@@ -396,43 +403,59 @@ export default function JournalLogger() {
 
               {/* Dynamic Analysis Tabs */}
               <div className="space-y-3">
-                <div className="flex border-b border-slate-700 text-xs">
+                <div role="tablist" aria-label="Analysis Insights" className="flex border-b border-slate-700 text-xs">
                   <button
+                    role="tab"
+                    aria-selected={activeTab === 'coping'}
+                    id="tab-coping"
+                    aria-controls="panel-coping"
                     onClick={() => setActiveTab('coping')}
-                    className={`flex-1 pb-2 font-mono text-center transition-all ${
+                    className={`flex-1 pb-2 font-mono text-center transition-all cursor-pointer ${
                       activeTab === 'coping' 
-                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-semibold' 
-                        : 'text-slate-400 hover:text-slate-300'
+                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' 
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     Actionable Tips
                   </button>
                   <button
+                    role="tab"
+                    aria-selected={activeTab === 'mindfulness'}
+                    id="tab-mindfulness"
+                    aria-controls="panel-mindfulness"
                     onClick={() => setActiveTab('mindfulness')}
-                    className={`flex-1 pb-2 font-mono text-center transition-all ${
+                    className={`flex-1 pb-2 font-mono text-center transition-all cursor-pointer ${
                       activeTab === 'mindfulness' 
-                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-semibold' 
-                        : 'text-slate-400 hover:text-slate-300'
+                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' 
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     Zen Drills
                   </button>
                   <button
+                    role="tab"
+                    aria-selected={activeTab === 'triggers'}
+                    id="tab-triggers"
+                    aria-controls="panel-triggers"
                     onClick={() => setActiveTab('triggers')}
-                    className={`flex-1 pb-2 font-mono text-center transition-all ${
+                    className={`flex-1 pb-2 font-mono text-center transition-all cursor-pointer ${
                       activeTab === 'triggers' 
-                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-semibold' 
-                        : 'text-slate-400 hover:text-slate-300'
+                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' 
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     Stress Triggers
                   </button>
                   <button
+                    role="tab"
+                    aria-selected={activeTab === 'patterns'}
+                    id="tab-patterns"
+                    aria-controls="panel-patterns"
                     onClick={() => setActiveTab('patterns')}
-                    className={`flex-1 pb-2 font-mono text-center transition-all ${
+                    className={`flex-1 pb-2 font-mono text-center transition-all cursor-pointer ${
                       activeTab === 'patterns' 
-                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-semibold' 
-                        : 'text-slate-400 hover:text-slate-300'
+                        ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' 
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     Mood Cycles
@@ -442,8 +465,8 @@ export default function JournalLogger() {
                 {/* Tab content area */}
                 <div className="min-h-36 py-2">
                   {activeTab === 'coping' && (
-                    <div className="space-y-3">
-                      <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">Immediate Coping Worklist:</p>
+                    <div id="panel-coping" role="tabpanel" aria-labelledby="tab-coping" className="space-y-3">
+                      <p className="text-xs text-slate-300 font-mono uppercase tracking-wider">Immediate Coping Worklist:</p>
                       <ul className="space-y-2">
                         {selectedEntry.analysis?.copingStrategies?.map((tip, idx) => (
                           <li key={idx} className="flex gap-2 text-xs text-slate-300 bg-slate-900/30 p-2.5 rounded-lg border border-slate-700/30">
@@ -456,8 +479,8 @@ export default function JournalLogger() {
                   )}
 
                   {activeTab === 'mindfulness' && (
-                    <div className="space-y-3">
-                      <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">Anti-stress Mind Routine:</p>
+                    <div id="panel-mindfulness" role="tabpanel" aria-labelledby="tab-mindfulness" className="space-y-3">
+                      <p className="text-xs text-slate-300 font-mono uppercase tracking-wider">Anti-stress Mind Routine:</p>
                       <ul className="space-y-2">
                         {selectedEntry.analysis?.mindfulnessExercises?.map((ex, idx) => (
                           <li key={idx} className="flex gap-2 text-xs text-slate-300 bg-teal-950/15 p-2.5 rounded-lg border border-teal-900/30">
@@ -470,8 +493,8 @@ export default function JournalLogger() {
                   )}
 
                   {activeTab === 'triggers' && (
-                    <div className="space-y-3">
-                      <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">Identified Exam Triggers:</p>
+                    <div id="panel-triggers" role="tabpanel" aria-labelledby="tab-triggers" className="space-y-3">
+                      <p className="text-xs text-slate-300 font-mono uppercase tracking-wider">Identified Exam Triggers:</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedEntry.analysis?.triggers?.map((trigger, idx) => (
                           <span key={idx} className="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-slate-900 text-emerald-400 border border-emerald-500/20">
@@ -483,8 +506,8 @@ export default function JournalLogger() {
                   )}
 
                   {activeTab === 'patterns' && (
-                    <div className="space-y-3">
-                      <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">Anxiety / Overwhelm Cycles:</p>
+                    <div id="panel-patterns" role="tabpanel" aria-labelledby="tab-patterns" className="space-y-3">
+                      <p className="text-xs text-slate-300 font-mono uppercase tracking-wider">Anxiety / Overwhelm Cycles:</p>
                       <ul className="space-y-2">
                         {selectedEntry.analysis?.patterns?.map((pattern, idx) => (
                           <li key={idx} className="flex items-center gap-2 text-xs text-slate-300 font-mono">
